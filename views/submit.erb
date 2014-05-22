@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Slacker News</title>
+    <link rel="shortcut icon" href="http://charles.io/images/yc.png">
+    <link rel="stylesheet" href="comment_styles.css" type="text/css">
+  </head>
+
+  <body>
+    <div class='whole_page'>
+      <header>
+        <img src="http://vladizorov.info/static/images/favicons/ycombinator.ico" id="logo" />
+       <a href="/index"> <h4> Slacker News </h4> </a>
+       <nav>
+         <ul>
+           <li> <a href=""> new </a> | </li>
+           <li> <a href=""> comments </a> | </li>
+           <li> <a href=""> ask </a> | </li>
+           <li> <a href=""> jobs </a> | </li>
+           <li> <a href="/submit"> submit </a> </li>
+         </ul>
+       </nav>
+       <a id="login" href=""> login </a>
+      </header>
+      
+      <div class="content">
+
+        <form action="/submit" method="post">
+          <br>
+          <label for="title"> Title: </label>
+          <input type="text" id="title" name="title"> </input> <br>
+
+          <label for="url"> URL: </label>
+          <input type="text" id="url" name="url"> </input> <br> <br>
+
+          <label for="description"> Description: </label> <br>
+          <textarea rows="7" cols="70" id="description" name="description"> 
+          </textarea> <br>
+
+          <input type="submit"> </input>
+        </form>
+
+      </div>
+
+      <footer>
+        <hr/>
+        <nav> 
+          <ul>
+           <li> <a href=""> Lists </a> | </li>
+           <li> <a href=""> RSS </a> | </li>
+           <li> <a href=""> Bookmarklet </a> | </li>
+           <li> <a href=""> Guidelines </a> | </li>
+           <li> <a href=""> FAQ </a> | </li>
+           <li> <a href=""> DMCA </a> | </li>
+           <li> <a href=""> News News </a> | </li>
+           <li> <a href=""> Feature Requests </a> | </li>
+           <li> <a href=""> Bugs </a> | </li>
+           <li> <a href=""> Y Combinator </a> | </li>
+           <li> <a href=""> Apply </a> | </li>
+           <li> <a href=""> Library </a> </li>
+         </ul>
+         <form>  
+           Search:
+           <input type="text field" name="search_input">
+           </form>
+         </form> 
+        </nav> 
+      </footer>
+
+    </div>
+  </body>
+</html>
