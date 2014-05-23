@@ -29,16 +29,15 @@
         <form action="/submit" method="post">
           <br>
           <label for="title"> Title: </label>
-          <input type="text" id="title" name="title" value="<%= @title %>" > </input> <br> <br>
+          <input type="text" id="title" name="title" > </input> <br> 
 
           <label for="url"> URL: </label>
-          <input type="text" id="url" name="url" value="<%= @url %>" > </input> <br> <br> 
+          <input type="text" id="url" name="url" > </input> <br> <br> 
 
           <label for="description"> Description: </label> <br>
-          <input type="text" id="description" name="description" title="Minimum of 20 characters." value="<%= @description %>" > </input> <br>
-          <!-- Can't use the pattern attribute with <textarea> pattern=".{20,}" -->
-          <input type="submit"> </input> <br> <br>
-          <br> <br>
+          <input type="text" id="description" name="description" title="Minimum of 20 characters." > </input> <br> <br>
+          
+          <input type="submit"> <%= @error_message %> </input> 
         </form>
       </div>
 

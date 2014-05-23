@@ -39,6 +39,23 @@ get "/comments" do
 end
 
 get "/submit" do
+  @title = params["title"]
+  @url = params["url"] 
+  @description = params["description"] 
+  
+  @error_message = ""
+  if not_blank(@title, @url, @description) == false
+    @error_message = "No blank forms please."
+  elsif not_too_short(@description) == false
+    @error_message = "Please enter a description of at least 20 characters." 
+  elsif not_already_submitted(@url) == false
+    @error_message = "Sorry, that article has already been submitted!"
+  elsif not_invalid(@url) == false
+    @error_message = "Please enter a valid URL."
+  else
+    @error_message = "" 
+  end
+
   erb :submit
 end
 
@@ -48,9 +65,9 @@ post "/submit" do
     @articles << row.to_hash  
   end
 
-  @title = params["title"]
-  @url = params["url"]
-  @description = params["description"]
+  @title = params["title"] || ""
+  @url = params["url"] || ""
+  @description = params["description"] || ""
   
   if not_blank(@title, @url, @description) && not_already_submitted(@url, @articles) && not_too_short(@description) && not_invalid(@url)
     CSV.open("articles.csv", "a") do |file|
@@ -65,16 +82,3 @@ end
 #If all of these tests pass then you can run the block to write to CSV
 #If not, output unique message for each (in view)
 #Must set default values for forms to their respective params values
-
-
-
-# @blank_form_error = ensure_no_blank(title, url, description)
-  # @short_desc_error = ensure_length(description)
-  # if ok_to_save_submission?
-  #   CSV.open("articles.csv", "a") do |file|
-  #     file << [title, url, description]
-  #   end
-  #   redirect "/index"
-  # else
-  #   redirect "/submit"
-  # end
