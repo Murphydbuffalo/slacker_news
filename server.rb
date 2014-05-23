@@ -1,9 +1,25 @@
-require 'sinatra'
+require "sinatra"
 require "CSV"
+require "net/HTTP"
+require "URI"
 require "pry"
 
-def already_submitted(url, previous_urls)
-  
+def not_already_submitted(current_url, previous_urls)
+  previous_urls.any? {|submission| submission[:url] == current_url } ? false : true
+end
+
+def not_blank(*forms)  
+  forms.any? {|input| input == nil} ? false : true
+end
+
+def not_too_short(description)
+  description.length < 20 ? false : true
+end
+
+def not_invalid(url)
+  uri = URI(url)
+  response = Net::HTTP.get_response(uri)
+  response.code != 200 #Don't use ternaries with statements that already return true or false ... that equates to if true is true return X if true is false return Y etc...
 end
 
 get "/index" do 
@@ -27,34 +43,30 @@ get "/submit" do
 end
 
 post "/submit" do
-  title = params["title"]
-  url = params["url"]
-  description = params["description"]
-  # @short_desc_error = ensure_length(description)
-  CSV.open("articles.csv", "a") do |file|
-      file << [title, url, description]
-    end
-    redirect "/index"
+  @articles = []
+  CSV.foreach('articles.csv', headers: true, header_converters: :symbol) do |row|
+    @articles << row.to_hash  
+  end
+
+  @title = params["title"]
+  @url = params["url"]
+  @description = params["description"]
+  
+  if not_blank(@title, @url, @description) && not_already_submitted(@url, @articles) && not_too_short(@description) && not_invalid(@url)
+    CSV.open("articles.csv", "a") do |file|
+        file << [@title, @url, @description]
+      end
+      redirect "/index"
+  else
+    redirect "/submit"
+  end
 end
 
-# def ensure_valid(url)
-#   if url 
-#     ok_to_save_submission? == false
-#     url_error = "Enter a valid URL, please : )"
-#   end 
-# end
+#If all of these tests pass then you can run the block to write to CSV
+#If not, output unique message for each (in view)
+#Must set default values for forms to their respective params values
 
-# def ok_to_save_submission?
-#   false
-# end
 
-# def ensure_no_blank(*forms)
-#   forms.any? {|input| input == nil} ? "No blank fields please :-)" : ok_to_save_submission? == true
-# end
-
-# def ensure_length(description)
-#   description.length < 20 ? "Enter a description of at least 20 characters, please :-)" : ok_to_save_submission? == true
-# end
 
 # @blank_form_error = ensure_no_blank(title, url, description)
   # @short_desc_error = ensure_length(description)
