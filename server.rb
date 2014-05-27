@@ -17,23 +17,19 @@ def not_too_short(description)
 end
 
 def not_invalid(url)
-  uri = URI(url)
-  response = Net::HTTP.get_response(uri)
-  response.code != 200 #Don't use ternaries with statements that already return true or false ... that equates to if true is true return X if true is false return Y etc...
+  url.start_with?("http") ? (address = URI(url)) : (redirect '/submit')
+  response = Net::HTTP.get_response(address)
+  response.code == 200 #Don't use ternaries with code that already returns T/F. That equates to "if true == true return X" "if true == false return Y" etc.
 end
 
 def get_csv_data
   articles = []
-  CSV.foreach('articles.csv', headers: true, header_converters: :symbol) do |row|
-    articles << row.to_hash  
-  end
+  CSV.foreach('articles.csv', headers: true, header_converters: :symbol) { |row| articles << row.to_hash }
   articles
 end
 
 def append_csv_data(title, url, description)
-  CSV.open("articles.csv", "a") do |file|
-        file << [title, url, description]
-  end
+  CSV.open("articles.csv", "a") { |file| file << [title, url, description] }
 end
 
 get "/index" do 
@@ -53,29 +49,12 @@ get "/submit" do
   @title = params["title"]
   @url = params["url"] 
   @description = params["description"] 
-  
-  @error_message = ""
-  if not_blank(@title, @url, @description) == false
-    @error_message = "No blank forms please."
-  elsif not_too_short(@description) == false
-    @error_message = "Please enter a description of at least 20 characters." 
-  elsif not_already_submitted(@url) == false
-    @error_message = "Sorry, that article has already been submitted!"
-  elsif not_invalid(@url) == false
-    @error_message = "Please enter a valid URL."
-  else
-    @error_message = "" 
-  end
 
   erb :submit
 end
 
 post "/submit" do
-  @articles = []
-  CSV.foreach('articles.csv', headers: true, header_converters: :symbol) do |row|
-    @articles << row.to_hash  
-  end
-
+  @articles = get_csv_data
   @title = params["title"] || ""
   @url = params["url"] || ""
   @description = params["description"] || ""
@@ -84,7 +63,7 @@ post "/submit" do
     append_csv_data(@title, @url, @description)
     redirect "/index"
   else
-    redirect "/submit"
+    redirect '/submit'
   end
 end
 
