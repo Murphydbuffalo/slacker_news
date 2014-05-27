@@ -22,11 +22,22 @@ def not_invalid(url)
   response.code != 200 #Don't use ternaries with statements that already return true or false ... that equates to if true is true return X if true is false return Y etc...
 end
 
-get "/index" do 
-  @articles = []
+def get_csv_data
+  articles = []
   CSV.foreach('articles.csv', headers: true, header_converters: :symbol) do |row|
-  	@articles << row.to_hash  
+    articles << row.to_hash  
   end
+  articles
+end
+
+def append_csv_data(title, url, description)
+  CSV.open("articles.csv", "a") do |file|
+        file << [title, url, description]
+  end
+end
+
+get "/index" do 
+  @articles = get_csv_data
   erb :index	
 end
 
@@ -70,10 +81,8 @@ post "/submit" do
   @description = params["description"] || ""
   
   if not_blank(@title, @url, @description) && not_already_submitted(@url, @articles) && not_too_short(@description) && not_invalid(@url)
-    CSV.open("articles.csv", "a") do |file|
-        file << [@title, @url, @description]
-      end
-      redirect "/index"
+    append_csv_data(@title, @url, @description)
+    redirect "/index"
   else
     redirect "/submit"
   end
