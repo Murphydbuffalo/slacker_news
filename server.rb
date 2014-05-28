@@ -9,7 +9,7 @@ def not_already_submitted(current_url, previous_urls)
 end
 
 def not_blank(*forms)  
-  forms.any? {|input| input == nil} ? false : true
+  forms.any? {|input| input == nil || input == ""} ? false : true
 end
 
 def not_too_short(description)

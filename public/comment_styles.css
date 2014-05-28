@@ -67,6 +67,10 @@ a {text-decoration: none;
 
 span {font-size: 65%;}
 
+#error {color: red;
+        font-size: .8em;
+        padding-left: .5em;}
+
 hr {border: .15em solid #ff6600;}
 
 footer {text-align: center;}
