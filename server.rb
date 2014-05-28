@@ -17,9 +17,13 @@ def not_too_short(description)
 end
 
 def not_invalid(url)
-  url.start_with?("http") ? (address = URI(url)) : (redirect '/submit')
-  response = Net::HTTP.get_response(address)
-  response.code == 200 #Don't use ternaries with code that already returns T/F. That equates to "if true == true return X" "if true == false return Y" etc.
+  if url.start_with?("http")  
+    (address = URI(url)) 
+    response = Net::HTTP.get_response(address)
+    response.code == 200 #Don't use ternaries with code that already returns T/F. That equates to "if true == true return X" "if true == false return Y" etc.
+  else 
+    false
+  end
 end
 
 def get_csv_data
@@ -49,7 +53,7 @@ get "/submit" do
   @title = params["title"]
   @url = params["url"] 
   @description = params["description"] 
-
+  
   erb :submit
 end
 
@@ -63,7 +67,16 @@ post "/submit" do
     append_csv_data(@title, @url, @description)
     redirect "/index"
   else
-    redirect '/submit'
+    if !not_blank(@title, @url, @description)
+      @error_message = "No blank fields please."
+    elsif !not_already_submitted(@url, @articles)
+      @error_message = "Sorry, that article has already been submitted!"
+    elsif !not_too_short(@description)
+      @error_message = "Please enter a description of at least 20 characters."
+    elsif !not_invalid(@url)
+      @error_message = "Sorry, we didn't recognize that URL!"
+    end
+    erb :submit
   end
 end
 
